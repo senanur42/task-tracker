@@ -75,29 +75,17 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     @Transactional
     public DtoTask updateTask(Long id, DtoTaskIU dtoTaskIU) {
-
-        // 1. Güncellenecek görevi ID ile veritabanından çek (bulamazsa hata fırlatır)
         Task existingTask = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Güncellenecek Görev (ID: " + id + ") bulunamadı."));
 
-        // 2. Yeni verileri mevcut görev objesine kopyala
-        // Not: BeanUtils, DTO'daki title, description, status ve dueDate alanlarını kopyalar.
-        BeanUtils.copyProperties(dtoTaskIU, existingTask, "id"); // "id" alanını kopyalamayı engellemek önemli
-
-        // 3. User'ı manuel olarak tekrar ata (user_id değişmiş olabilir veya foreign key kuralı gereği)
-        // Eğer DTO'da user_id varsa, ilgili User'ı çekip Task'a atamalıyız.
-        // DtoTaskIU'da user_id alanının olduğunu varsayıyoruz.
+        BeanUtils.copyProperties(dtoTaskIU, existingTask, "id");
         if (dtoTaskIU.getUser_id() != null) {
-            // Kullanıcıyı bul
             User user = userRepository.findById(dtoTaskIU.getUser_id())
                     .orElseThrow(() -> new RuntimeException("Yeni Kullanıcı (ID: " + dtoTaskIU.getUser_id() + ") bulunamadı."));
             existingTask.setUser(user);
         }
 
-        // 4. Güncellenmiş görevi kaydet (Hibernate/JPA otomatik olarak UPDATE sorgusu oluşturur)
         Task updatedTask = taskRepository.save(existingTask);
-
-        // 5. Sonucu DTO olarak döndür
         DtoTask dtoTask = new DtoTask();
         BeanUtils.copyProperties(updatedTask, dtoTask);
 

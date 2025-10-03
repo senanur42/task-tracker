@@ -44,11 +44,8 @@ public class RestTaskController extends RestBaseController implements IRestTaskC
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable("id") Long id) {
 
-        // Service katmanında silme işlemini çağır
         taskService.deleteTask(id);
 
-        // Yanıt olarak 204 No Content (içerik yok) döndürülür.
-        // Bu, silme işlemlerinin başarılı olduğunu belirtmek için en yaygın kullanılan HTTP durumudur.
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @Override
@@ -57,10 +54,8 @@ public class RestTaskController extends RestBaseController implements IRestTaskC
             @PathVariable("id") Long id,
             @RequestBody DtoTaskIU dtoTaskIU) {
 
-        // Service katmanında güncelleme işlemini çağır
         DtoTask updatedTask = taskService.updateTask(id, dtoTaskIU);
 
-        // 200 OK yanıtı ile güncellenmiş görevi döndür
         return ResponseEntity.ok(updatedTask);
     }
 
