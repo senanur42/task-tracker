@@ -1,3 +1,5 @@
+// jwt yerine ke clock geldiği için bu class artık kullanılmıyor
+
 package com.senanur.dto;
 
 import lombok.AllArgsConstructor;

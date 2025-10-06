@@ -19,7 +19,7 @@ public class DtoTask extends DtoBase {
     private String status;
     private Date createTime;
     private Date dueDate;
-    //private DtoUser user_id;
+    private Long user_id;
 
 
 }

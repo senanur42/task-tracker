@@ -1,6 +1,59 @@
 package com.senanur.service.impl;
 
 import com.senanur.dto.AuthRequest;
+import com.senanur.dto.DtoUser;
+
+import com.senanur.model.User;
+import com.senanur.repository.UserRepository;
+import com.senanur.service.IAuthenticationService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import java.util.Date;
+
+
+/**
+ * Bu servis artık sadece kullanıcı kaydı (register) ile ilgilenir.
+ * Kimlik doğrulama (authenticate) ve token yenileme (refreshToken) işlemleri
+ * doğrudan Keycloak tarafından Postman/Frontend aracılığıyla yapılacaktır.
+ */
+@Service
+public class AuthenticationServiceImpl implements IAuthenticationService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    private User createUser(AuthRequest input){
+        User user = new User();
+        user.setCreateTime(new Date());
+        user.setUsername(input.getUsername());
+        user.setPassword(passwordEncoder.encode(input.getPassword()));
+        return user;
+    }
+
+    @Override
+    public DtoUser register(AuthRequest input) {
+        DtoUser dtoUser = new DtoUser();
+        User savedUser = userRepository.save(createUser(input));
+        BeanUtils.copyProperties(savedUser, dtoUser);
+        return dtoUser;
+    }
+
+}
+
+
+
+/*
+Yalnızca jwt varken kullandığım kod key clock gelince değişti
+
+
+package com.senanur.service.impl;
+
+import com.senanur.dto.AuthRequest;
 import com.senanur.dto.AuthResponse;
 import com.senanur.dto.DtoUser;
 import com.senanur.dto.RefreshTokenRequest;
@@ -108,3 +161,6 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
 
 }
+
+
+*/
